@@ -42,41 +42,29 @@
         }
 
         body, html {
-            background-color: white;
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            min-height: 100vh;
-            overflow-x: hidden;
+            background-color: white; margin: 0; padding: 0;
+            width: 100%; min-height: 100vh; overflow-x: hidden;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            user-select: none;
-            -webkit-user-select: none;
+            user-select: none; -webkit-user-select: none;
         }
-
-        .ios-spacer {
-            width: 100%;
-            height: 100px;
-            background-color: white;
-            display: block;
-        }
-
+        
         .card-container {
-            width: 100vw;
-            max-width: 500px;
-            margin: 0 auto;
-            aspect-ratio: 1080 / 1920; 
-            position: relative;
-            background-image: url('bg.jpg'); /* Pointe désormais vers le nouveau fichier bg.jpg */
-            background-size: 100% 100%; 
-            background-position: top center;
-            background-repeat: no-repeat;
-            overflow: hidden;
+            width: 100vw; max-width: 500px; margin: 0 auto;
+            /* Remonte légèrement l'ensemble de la carte sur l'écran pour boucher le trou blanc */
+            margin-top: -3vh; 
+            aspect-ratio: 1080 / 1920; position: relative;
+            background-image: url('bg.jpg');
+            /* Étire légèrement et remonte l'image de fond pour l'aligner parfaitement avec tes textes */
+            background-size: 100% 110%; 
+            background-position: center -7.5%; 
+            background-repeat: no-repeat; overflow: hidden;
             container-type: inline-size;
         }
 
+        /* Nouvelles coordonnées ajustées pour la nouvelle image */
         .top-bar {
             position: absolute;
-            top: 4.5%;
+            top: 2.5%;
             left: 5%;
             right: 5%;
             color: white;
@@ -177,6 +165,7 @@
             white-space: nowrap;
         }
 
+        /* Hitbox pour le menu de modification (logo HEC) */
         .hitbox {
             position: absolute;
             top: 25%;
@@ -187,6 +176,7 @@
             cursor: pointer;
         }
 
+        /* Menu de modification (Modal) */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -257,6 +247,7 @@
 </head>
 <body>
 
+    <!-- Bloc de 100px pour contrer le comportement plein écran d'iOS PWA -->
     <div class="ios-spacer"></div>
 
     <div class="card-container">
@@ -270,17 +261,21 @@
         
         <div class="isic-number" id="isic">S 000 000 000 000 X</div>
         
+        <!-- Photo de profil -->
         <img class="profile-pic" id="photo" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Profil">
         
+        <!-- Zone cliquable HEC -->
         <div class="hitbox" onclick="openModal()"></div>
         
         <div class="name" id="name">Karolína Veselá</div>
         <div class="validity" id="validity">09/2026 - 12/2027</div>
         <div class="birthdate" id="birthdate">21. 03. 2000</div>
         
+        <!-- Input caché pour la photo -->
         <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
     </div>
 
+    <!-- Modale de modification -->
     <div id="editModal" class="modal-overlay">
         <div class="modal-content">
             <h3>Modifier les informations</h3>
@@ -295,6 +290,7 @@
     </div>
 
     <script>
+        // Horloge temps réel (Format DD-MM-YYYY | HH:MM:SS)
         function updateClock() {
             const now = new Date();
             const d = String(now.getDate()).padStart(2, '0');
@@ -308,6 +304,7 @@
         setInterval(updateClock, 1000);
         updateClock();
 
+        // Génération automatique du numéro ISIC s'il n'existe pas
         function initISIC() {
             let isic = localStorage.getItem('isic_number');
             if (!isic) {
@@ -318,17 +315,20 @@
             document.getElementById('isic').textContent = isic;
         }
 
+        // Calcul automatique de la validité (Année scolaire en cours)
         function calculateValidity() {
             const now = new Date();
-            const currentMonth = now.getMonth(); 
+            const currentMonth = now.getMonth(); // 0 = Janvier, 7 = Août, 8 = Septembre
             const currentYear = now.getFullYear();
             
+            // L'année commence en septembre.
             const startYear = currentMonth >= 7 ? currentYear : currentYear - 1;
             const endYear = startYear + 1;
             
             return `09/${startYear} - 12/${endYear}`;
         }
 
+        // Chargement des données au démarrage
         function loadData() {
             initISIC();
             document.getElementById('validity').textContent = calculateValidity();
@@ -346,6 +346,7 @@
         }
         loadData();
 
+        // Gestion de la modale
         const modal = document.getElementById('editModal');
         
         function openModal() {
@@ -359,6 +360,7 @@
             document.getElementById('fileInput').value = ''; 
         }
 
+        // Sauvegarde instantanée sans bloquer l'interface
         function saveModal() {
             const newName = document.getElementById('inputName').value.trim();
             const newBirth = document.getElementById('inputBirthdate').value.trim();
@@ -375,6 +377,7 @@
             closeModal();
         }
 
+        // Traitement et compression de l'image pour respecter les limites du navigateur
         function handleImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -399,6 +402,7 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
                     
+                    // Compression en jpeg pour la légèreté
                     const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7); 
                     document.getElementById('photo').src = compressedBase64;
                     
