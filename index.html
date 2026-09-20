@@ -4,37 +4,323 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="ISIC">
     <title>Carte Étudiante</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        * {
-            box-sizing: border-box;
+        body { 
+            background-color: white; 
+            margin: 0; 
+            overflow: hidden; 
+            font-family: -apple-system, sans-serif; 
+            -webkit-user-select: none;
+            user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
 
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #2b303a; /* Couleur neutre élégante derrière la carte */
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        .app-container { 
+            width: 100%; 
+            height: calc(100dvh - 55px); 
+            margin-top: 55px; 
+            background-image: url('background.jpg'); 
+            background-size: 100% 100%; 
+            background-position: center top;
+            background-repeat: no-repeat;
+            position: relative; 
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.9); }
+        }
+
+        .dot {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background-color: #38ef7d;
+            border-radius: 50%;
+            margin-right: 6px;
+            animation: blink 1.5s infinite;
+            box-shadow: 0 0 8px rgba(56, 239, 125, 0.8);
+        }
+
+        /* Positions absolues basées sur les spécifications */
+        .pos-top-left {
+            position: absolute;
+            top: 2.5%;
+            left: 15%;
+            color: white;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            font-size: clamp(0.7rem, 2.5vw, 0.9rem);
+        }
+
+        .pos-top-right {
+            position: absolute;
+            top: 2.5%;
+            right: 5%;
+            color: white;
+            font-variant-numeric: tabular-nums;
+            font-size: clamp(0.7rem, 2.5vw, 0.9rem);
+        }
+
+        .pos-isic {
+            position: absolute;
+            top: 15%;
+            right: 8%;
+            color: #333;
+            font-size: clamp(0.65rem, 2.2vw, 0.85rem);
+            font-weight: 500;
+        }
+
+        .pos-photo {
+            position: absolute;
+            top: 25.5%;
+            left: 33%;
+            width: 34%;
+            height: 23%;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            cursor: pointer;
             overflow: hidden;
-            -webkit-user-select: none;
-            user-select: none;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        /* Conteneur verrouillé au ratio exact de l'image d'origine (576 x 1024 = 9:16) */
-        #card-wrapper {
-            position: relative;
+        .pos-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .pos-hec-trigger {
+            position: absolute;
+            top: 27%;
+            right: 5%;
+            width: 25%;
+            height: 10%;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .pos-name {
+            position: absolute;
+            top: 51.5%;
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            color: #222;
+        }
+
+        .pos-validity {
+            position: absolute;
+            top: 66.5%;
+            left: 10%;
+            color: #222;
+            font-weight: bold;
+            font-size: clamp(0.85rem, 3vw, 1rem);
+        }
+
+        .pos-dob {
+            position: absolute;
+            top: 66.5%;
+            right: 18%;
+            color: #222;
+            font-weight: bold;
+            font-size: clamp(0.85rem, 3vw, 1rem);
+        }
+
+        /* Modal styling */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 50;
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- Top bar -->
+        <div class="pos-top-left">
+            <span class="dot"></span> VALIDE
+        </div>
+        <div id="clock" class="pos-top-right">---00-0000 | 00:00:00</div>
+
+        <!-- ISIC -->
+        <div id="isic" class="pos-isic">S 000 000 000 000 X</div>
+
+        <!-- Photo upload and display -->
+        <div class="pos-photo" onclick="document.getElementById('file-upload').click()">
+            <img id="profile-img" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22100%25%22%20height%3D%22100%25%22%20viewBox%3D%220%200%20100%20100%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23e0e0e0%22%2F%3E%3Cpath%20d%3D%22M50%2030a12%2012%200%201%200%200%2024%2012%2012%200%200%200%200-24zm0%2030c-13.3%200-40%206.7-40%2020v5h80v-5c0-13.3-26.7-20-40-20z%22%20fill%3D%22%239e9e9e%22%2F%3E%3C%2Fsvg%3E" alt="Profile">
+            <input type="file" id="file-upload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+        </div>
+
+        <!-- Transparent HEC trigger -->
+        <div class="pos-hec-trigger" onclick="openModal()"></div>
+
+        <!-- Details -->
+        <div id="name" class="pos-name">Karolína Veselá</div>
+        <div id="validity" class="pos-validity">09/2026 – 12/2027</div>
+        <div id="dob" class="pos-dob">21. 03. 2000</div>
+    </div>
+
+    <div id="edit-modal" class="modal-overlay">
+        <div class="bg-white rounded-2xl p-6 w-11/12 max-w-sm shadow-2xl">
+            <h3 class="text-xl font-bold mb-4 text-gray-800">Modifier les infos</h3>
+            
+            <label class="block text-sm font-semibold text-gray-600 mb-1">Prénom & Nom</label>
+            <input type="text" id="input-name" class="w-full border border-gray-300 rounded-lg p-3 mb-4 focus:outline-none focus:border-teal-500" placeholder="Ex: Karolína Veselá">
+            
+            <label class="block text-sm font-semibold text-gray-600 mb-1">Date de naissance (DD. MM. YYYY)</label>
+            <input type="text" id="input-dob" class="w-full border border-gray-300 rounded-lg p-3 mb-6 focus:outline-none focus:border-teal-500" placeholder="Ex: 21. 03. 2000">
+            
+            <div class="flex justify-end gap-3">
+                <button onclick="closeModal()" class="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 font-medium hover:bg-gray-300">Annuler</button>
+                <button onclick="saveModalData()" class="px-4 py-2 rounded-lg bg-[#4dc0bb] text-white font-medium hover:bg-[#3ba8a3]">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Generate Dynamic Apple Touch Icon
+        (function generateIcon() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+            
+            ctx.fillStyle = '#4dc0bb';
+            ctx.fillRect(0, 0, 512, 512);
+            
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 160px -apple-system, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('ISIC', 256, 256);
+            
+            const link = document.createElement('link');
+            link.rel = 'apple-touch-icon';
+            link.href = canvas.toDataURL('image/png');
+            document.head.appendChild(link);
+        })();
+
+        // Clock Logic
+        function updateClock() {
+            const now = new Date();
+            const d = String(now.getDate()).padStart(2, '0');
+            const mo = String(now.getMonth() + 1).padStart(2, '0');
+            const y = now.getFullYear();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clock').textContent = `${d}-${mo}-${y} | ${h}:${m}:${s}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Calculate Validity (09/YYYY - 12/YYYY+1)
+        function setValidity() {
+            const now = new Date();
+            const month = now.getMonth() + 1;
+            let startYear = now.getFullYear();
+            if (month < 8) startYear -= 1; // Before august, still in previous school year
+            document.getElementById('validity').textContent = `09/${startYear} – 12/${startYear + 1}`;
+        }
+        setValidity();
+
+        // ISIC Generator
+        function getOrGenerateISIC() {
+            let isic = localStorage.getItem('isic_number');
+            if (!isic) {
+                const r3 = () => Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+                isic = `S ${r3()} ${r3()} ${r3()} ${r3()} X`;
+                localStorage.setItem('isic_number', isic);
+            }
+            document.getElementById('isic').textContent = isic;
+        }
+        getOrGenerateISIC();
+
+        // Load Persisted Data
+        function loadData() {
+            const name = localStorage.getItem('isic_name');
+            if (name) document.getElementById('name').textContent = name;
+            
+            const dob = localStorage.getItem('isic_dob');
+            if (dob) document.getElementById('dob').textContent = dob;
+            
+            const photo = localStorage.getItem('isic_photo');
+            if (photo) document.getElementById('profile-img').src = photo;
+        }
+        loadData();
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 400;
+                    const scaleSize = MAX_WIDTH / img.width;
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scaleSize;
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8);
+                    document.getElementById('profile-img').src = compressedBase64;
+                    localStorage.setItem('isic_photo', compressedBase64);
+                }
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        // Modal Logic
+        const modal = document.getElementById('edit-modal');
+        function openModal() {
+            document.getElementById('input-name').value = document.getElementById('name').textContent;
+            document.getElementById('input-dob').value = document.getElementById('dob').textContent;
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+
+        function saveModalData() {
+            const newName = document.getElementById('input-name').value;
+            const newDob = document.getElementById('input-dob').value;
+            
+            document.getElementById('name').textContent = newName;
+            document.getElementById('dob').textContent = newDob;
+            
+            localStorage.setItem('isic_name', newName);
+            localStorage.setItem('isic_dob', newDob);
+            
+            closeModal();
+        }
+    </script>
+</body>
+</html>            position: relative;
             /* Ratio exact de la maquette (576x1024) */
             aspect-ratio: 576 / 1024;
             height: 100dvh; /* Utilise la hauteur dynamique de Safari iOS */
