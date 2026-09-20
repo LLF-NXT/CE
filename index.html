@@ -11,7 +11,6 @@
     <meta name="apple-mobile-web-app-title" content="ISIC">
     <title>Carte Étudiante</title>
     
-    <!-- Script pour générer dynamiquement l'icône de l'application sur l'écran d'accueil -->
     <script>
         (function() {
             const canvas = document.createElement('canvas');
@@ -44,7 +43,7 @@
         }
 
         body, html {
-            background-color: white;
+            background-color: white; /* Fond blanc */
             margin: 0;
             padding: 0;
             width: 100%;
@@ -53,29 +52,31 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             user-select: none;
             -webkit-user-select: none;
-            display: flex;
-            align-items: flex-start; /* Aligne la carte strictement en haut */
-            justify-content: center;
+            
+            /* Ajout de la section vierge de 100px en haut demandée */
+            padding-top: 100px;
         }
 
         /* Container Query Setup for flawless scaling */
         .card {
-            width: 100vw;
-            max-width: 100%;
+            width: 100%;
+            max-width: 500px; /* Evite que ça soit géant sur iPad/PC */
+            margin: 0 auto;
             aspect-ratio: 1080 / 1920; /* Ratio strict de l'image de fond */
             position: relative;
             background-image: url('background.jpg');
-            background-size: cover;
+            background-size: 100% 100%; /* Force l'image à remplir le conteneur */
             background-position: top center;
+            background-repeat: no-repeat;
             overflow: hidden;
             container-type: inline-size; /* Permet d'utiliser l'unité 'cqi' pour les tailles de police */
         }
 
         .top-bar {
             position: absolute;
-            top: 6.2%;
+            top: 3.5%;
             left: 5%;
-            width: 90%;
+            right: 5%;
             color: white;
             display: flex;
             justify-content: space-between;
@@ -96,13 +97,13 @@
             height: 3cqi;
             background-color: #00ff00; /* Vert vif */
             border-radius: 50%;
-            box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+            box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00; /* Effet néon renforcé */
             animation: blink 1s infinite alternate ease-in-out;
         }
 
         @keyframes blink {
-            0% { opacity: 0.5; box-shadow: 0 0 5px #00ff00; transform: scale(0.95); }
-            100% { opacity: 1; box-shadow: 0 0 15px #00ff00, 0 0 25px #00ff00; transform: scale(1.05); }
+            0% { opacity: 0.4; box-shadow: 0 0 5px #00ff00; transform: scale(0.95); }
+            100% { opacity: 1; box-shadow: 0 0 15px #00ff00, 0 0 25px #00ff00, 0 0 35px #00ff00; transform: scale(1.05); }
         }
 
         .clock-display {
@@ -112,10 +113,11 @@
 
         .isic-number {
             position: absolute;
-            top: 14.5%;
-            right: 7%;
+            top: 15.5%; /* Légèrement baissé selon instruction */
+            right: 5%;
+            text-align: right;
             font-family: sans-serif;
-            font-size: 2.8cqi;
+            font-size: 3.2cqi;
             color: #000;
             letter-spacing: 0.1cqi;
             font-weight: 500;
@@ -123,35 +125,36 @@
 
         .profile-pic {
             position: absolute;
-            top: 25.8%;
-            left: 32%;
-            width: 36%;
-            height: 22.5%;
+            top: 25.5%;
+            left: 32.5%;
+            width: 35%;
+            height: 22%;
             object-fit: cover;
             background-color: transparent;
-            border-radius: 2px;
+            border-radius: 12px; /* Border radius ajouté pour les bords arrondis */
             z-index: 2;
         }
 
         .name {
             position: absolute;
-            top: 50.5%;
+            top: 51.5%;
             left: 0;
             width: 100%;
             text-align: center;
             font-family: sans-serif;
-            font-size: 5cqi;
+            font-size: 6cqi;
             font-weight: bold;
             color: #000;
         }
 
         .validity {
             position: absolute;
-            top: 64.5%;
-            left: 25%;
-            transform: translateX(-50%);
+            top: 64%;
+            left: 10%;
+            width: 40%;
+            text-align: center;
             font-family: sans-serif;
-            font-size: 3.5cqi;
+            font-size: 4cqi;
             font-weight: bold;
             color: #000;
             white-space: nowrap;
@@ -159,11 +162,12 @@
 
         .birthdate {
             position: absolute;
-            top: 64.5%;
-            left: 75%;
-            transform: translateX(-50%);
+            top: 64%;
+            right: 10%;
+            width: 40%;
+            text-align: center;
             font-family: sans-serif;
-            font-size: 3.5cqi;
+            font-size: 4cqi;
             font-weight: bold;
             color: #000;
             white-space: nowrap;
@@ -172,10 +176,10 @@
         /* Hitbox invisible au dessus du logo HEC pour ouvrir le menu */
         .hitbox {
             position: absolute;
-            top: 26%;
+            top: 25%;
             right: 5%;
             width: 25%;
-            height: 10%;
+            height: 15%;
             z-index: 10;
             cursor: pointer;
         }
@@ -269,7 +273,6 @@
         
         <div class="name" id="name">Karolína Veselá</div>
         
-        <!-- La validité n'est plus modifiable, elle est calculée auto -->
         <div class="validity" id="validity">09/2026 - 12/2027</div>
         
         <div class="birthdate" id="birthdate">21. 03. 2000</div>
@@ -284,7 +287,6 @@
             
             <input type="text" id="inputName" placeholder="Prénom Nom">
             <input type="text" id="inputBirthdate" placeholder="DD. MM. YYYY">
-            <!-- L'input de validité a été supprimé comme demandé -->
             
             <button class="btn btn-photo" onclick="document.getElementById('fileInput').click()">📸 Modifier la photo</button>
             <button class="btn btn-save" onclick="saveModal()">Enregistrer</button>
@@ -312,8 +314,7 @@
             let isic = localStorage.getItem('isic_number');
             if (!isic) {
                 const r = () => Math.floor(Math.random() * 1000).toString().padStart(3, '0');
-                const lastDigit = Math.floor(Math.random() * 10);
-                isic = `S ${r()} ${r()} ${r()} ${r()} ${lastDigit} X`;
+                isic = `S ${r()} ${r()} ${r()} ${r()} X`;
                 localStorage.setItem('isic_number', isic);
             }
             document.getElementById('isic').textContent = isic;
@@ -322,10 +323,10 @@
         // Calcule dynamiquement l'année scolaire en cours (Ne se modifie pas manuellement)
         function calculateValidity() {
             const now = new Date();
-            const currentMonth = now.getMonth(); // 0 = Janvier, 7 = Août
+            const currentMonth = now.getMonth(); // 0 = Janvier, 7 = Août, 8 = Septembre
             const currentYear = now.getFullYear();
             
-            // Si on est en Août ou plus tard, l'année scolaire commence cette année, sinon elle a commencé l'année dernière
+            // Si on est en Août ou plus tard (>= 7), l'année scolaire commence cette année, sinon elle a commencé l'année dernière
             const startYear = currentMonth >= 7 ? currentYear : currentYear - 1;
             const endYear = startYear + 1;
             
@@ -379,7 +380,7 @@
                 localStorage.setItem('isic_birthdate', newBirth);
             }
             
-            closeModal();
+            closeModal(); // Ferme instantanément sans bloquer
         }
 
         // Compresse l'image pour éviter les erreurs de quota du localStorage
