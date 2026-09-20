@@ -10,17 +10,15 @@
     <title>Carte Étudiante</title>
     
     <style>
+        /* Reset and strict white body layout */
         html, body {
             background-color: #ffffff !important;
             margin: 0;
             padding: 0;
             width: 100%;
-            height: 100dvh; /* Adapts to iOS dynamic URL bar */
+            height: 100dvh;
             display: flex;
             justify-content: center;
-            /* Avoid iPhone notch dynamically */
-            padding-top: env(safe-area-inset-top, 55px);
-            box-sizing: border-box;
             overflow: hidden;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             -webkit-user-select: none;
@@ -28,124 +26,120 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Container that strictly respects the 576/1024 ratio */
+        /* Container that strictly respects the 576/1024 ratio and iOS notch */
         #card {
             aspect-ratio: 576 / 1024;
-            height: 100%; /* Scales to max available height */
-            max-width: 100%; /* Prevents horizontal overflow on very narrow screens */
+            /* Start perfectly below the notch */
+            margin-top: env(safe-area-inset-top, 47px);
+            /* Max height fits exactly what is left on screen */
+            max-height: calc(100dvh - env(safe-area-inset-top, 47px));
+            height: 100%;
+            max-width: 100vw;
             position: relative;
             background-image: url('background.jpg');
-            background-size: 100% 100%; /* Stretches background perfectly inside the ratio */
+            background-size: 100% 100%;
             background-position: center;
             background-repeat: no-repeat;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            /* Allows responsive font scaling relative to the card size */
-            container-type: size;
+            /* Container queries for responsive fonts inside the card */
+            container-type: inline-size;
         }
 
         @keyframes blink {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+            50% { opacity: 0.2; }
         }
 
         .dot {
             position: absolute;
-            top: 7.2%;
-            left: 13.5%;
-            width: 2.2cqw;
-            height: 2.2cqw;
+            top: 3.5%;
+            left: 14%;
+            width: 2.5cqi;
+            aspect-ratio: 1;
             background-color: #4dc0bb;
             border-radius: 50%;
             animation: blink 1.2s infinite ease-in-out;
         }
         
-        #valide-text {
-            position: absolute;
-            top: 6.7%;
-            left: 18%;
-            color: white;
-            font-size: 2.8cqw;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-        }
-
         #clock {
             position: absolute;
-            top: 6.7%;
-            right: 4.5%;
+            top: 3.5%;
+            right: 5%;
             color: white;
-            font-size: 2.5cqw;
+            font-size: 2.8cqi;
             font-variant-numeric: tabular-nums;
-            font-weight: 400;
+            font-weight: 500;
         }
 
         #isic {
             position: absolute;
-            top: 15.3%;
-            right: 4.5%;
-            color: #111;
-            font-size: 2.4cqw;
-            font-weight: 500;
+            top: 14%;
+            right: 10%;
+            color: black;
+            font-size: 2.8cqi;
+            font-weight: 600;
+            letter-spacing: 0.5px;
         }
 
         #photo {
             position: absolute;
-            top: 25.4%;
-            left: 32.7%;
-            width: 34%; /* Accurately covering the white box */
-            height: 22.5%;
+            top: 24%;
+            left: 32%;
+            width: 36%;
+            height: 24%;
             object-fit: cover;
-            border-radius: 4px;
-            background-color: #f0f0f0;
+            border-radius: 5px;
             z-index: 2;
+            display: none; /* Hidden by default if no image */
         }
 
+        /* Invisible hitbox over HEC logo */
         .hitbox {
             position: absolute;
             top: 25%;
-            right: 4%;
-            width: 26%;
-            height: 12%;
+            right: 5%;
+            width: 25%;
+            height: 15%;
             cursor: pointer;
             z-index: 10;
         }
 
         #name {
             position: absolute;
-            top: 51.5%;
+            top: 50.5%;
             left: 0;
             width: 100%;
             text-align: center;
             font-weight: bold;
-            font-size: 4.5cqw;
-            color: #1a1a1a;
+            font-size: 4.8cqi;
+            color: #111;
         }
 
         #validity {
             position: absolute;
-            top: 65.5%;
-            left: 8.5%;
-            font-size: 3cqw;
-            font-weight: 700;
-            color: #222;
+            top: 66.5%;
+            left: 10%;
+            font-size: 3.2cqi;
+            font-weight: bold;
+            color: #111;
         }
 
         #dob {
             position: absolute;
-            top: 65.5%;
-            right: 12%;
-            font-size: 3cqw;
-            font-weight: 700;
-            color: #222;
+            top: 66.5%;
+            right: 15%;
+            font-size: 3.2cqi;
+            font-weight: bold;
+            color: #111;
         }
 
         .modal-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.4);
             z-index: 9999;
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
             align-items: center;
             justify-content: center;
         }
@@ -156,18 +150,18 @@
             padding: 24px;
             width: 85%;
             max-width: 320px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
             text-align: center;
         }
         
         .modal-content input[type="text"] {
             width: 100%;
             box-sizing: border-box;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
+            padding: 14px;
+            margin-bottom: 12px;
+            border: 1px solid #ccc;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 16px; /* 16px prevents iOS Safari zoom */
             font-family: inherit;
         }
 
@@ -184,8 +178,8 @@
             box-sizing: border-box;
         }
 
-        .btn-photo { background-color: #f5f5f5; color: #333; border: 1px solid #ddd; }
-        .btn-save { background-color: #4dc0bb; color: white; }
+        .btn-photo { background-color: #f0f0f0; color: #333; border: 1px solid #ddd; }
+        .btn-save { background-color: #4dc0bb; color: white; margin-top: 10px; }
         .btn-cancel { background-color: transparent; color: #888; font-weight: normal; margin-bottom: 0; }
     </style>
 </head>
@@ -193,13 +187,11 @@
 
     <div id="card">
         <div class="dot"></div>
-        <div id="valide-text">VALIDE</div>
         <div id="clock">DD-MM-YYYY | HH:MM:SS</div>
         
         <div id="isic">S 000 000 000 000 X</div>
         
-        <!-- Default Photo -->
-        <img id="photo" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22100%25%22%20height%3D%22100%25%22%20viewBox%3D%220%200%20100%20100%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23e0e0e0%22%2F%3E%3Cpath%20d%3D%22M50%2035a14%2014%200%201%200%200%2028%2014%2014%200%200%200%200-28zm0%2034c-15.5%200-46%207.8-46%2023v6h92v-6c0-15.2-30.5-23-46-23z%22%20fill%3D%22%239e9e9e%22%2F%3E%3C%2Fsvg%3E" alt="Profil">
+        <img id="photo" src="" alt="Profil">
         
         <!-- Hitbox over HEC logo to open settings -->
         <div class="hitbox" onclick="openEditModal()"></div>
@@ -213,38 +205,19 @@
 
     <div id="editModal" class="modal-overlay">
         <div class="modal-content">
-            <h3 style="margin-top:0; color:#333; font-size: 18px;">Modifier les infos</h3>
+            <h3 style="margin-top:0; color:#333; font-size: 18px;">Modifier la carte</h3>
             
             <input type="text" id="inputName" placeholder="Prénom Nom">
             <input type="text" id="inputDob" placeholder="DD. MM. YYYY">
             
-            <button class="btn btn-photo" onclick="document.getElementById('fileInput').click()">📸 Changer la photo</button>
+            <button class="btn btn-photo" onclick="document.getElementById('fileInput').click()">📸 Photo de profil</button>
             <button class="btn btn-save" onclick="saveModalData()">Enregistrer</button>
             <button class="btn btn-cancel" onclick="closeModal()">Annuler</button>
         </div>
     </div>
 
     <script>
-        // Generate Dynamic Apple Touch Icon (#4dc0bb)
-        (function generateIcon() {
-            const canvas = document.createElement('canvas');
-            canvas.width = 512;
-            canvas.height = 512;
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = '#4dc0bb';
-            ctx.fillRect(0, 0, 512, 512);
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 160px -apple-system, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('ISIC', 256, 256);
-            const link = document.createElement('link');
-            link.rel = 'apple-touch-icon';
-            link.href = canvas.toDataURL('image/png');
-            document.head.appendChild(link);
-        })();
-
-        // Update clock and date
+        // Real-time clock update
         function updateClock() {
             const now = new Date();
             const d = String(now.getDate()).padStart(2, '0');
@@ -258,13 +231,13 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Dynamic validity based on current academic year
+        // Calculate dynamic validity based on current academic year
         function setValidity() {
             const now = new Date();
             const month = now.getMonth() + 1;
             let startYear = now.getFullYear();
-            if (month < 8) startYear -= 1; // Before August belongs to previous academic year
-            document.getElementById('validity').textContent = `09/${startYear} – 12/${startYear + 1}`;
+            if (month < 8) startYear -= 1; // Before August is previous academic year
+            document.getElementById('validity').textContent = `09/${startYear} - 12/${startYear + 1}`;
         }
         setValidity();
 
@@ -272,17 +245,17 @@
         function initISIC() {
             let isic = localStorage.getItem('isic_number');
             if (!isic) {
-                // Generates "S XXX XXX XXX XXX X"
+                // Generates format "S XXX XXX XXX XXX X"
                 const r = () => Math.floor(Math.random() * 1000).toString().padStart(3, '0');
                 const lastDigit = Math.floor(Math.random() * 10);
-                isic = `S ${r()} ${r()} ${r()} ${r()} ${lastDigit}`;
+                isic = `S ${r()} ${r()} ${r()} ${r()} ${lastDigit} X`;
                 localStorage.setItem('isic_number', isic);
             }
             document.getElementById('isic').textContent = isic;
         }
         initISIC();
 
-        // Load data from localStorage on startup
+        // Load saved text and photo data from localStorage
         function loadData() {
             const name = localStorage.getItem('isic_name');
             if (name) document.getElementById('name').textContent = name;
@@ -291,10 +264,15 @@
             if (dob) document.getElementById('dob').textContent = dob;
             
             const photo = localStorage.getItem('isic_photo');
-            if (photo) document.getElementById('photo').src = photo;
+            const photoEl = document.getElementById('photo');
+            if (photo) {
+                photoEl.src = photo;
+                photoEl.style.display = 'block'; // Make it visible if exists
+            }
         }
         loadData();
 
+        // Modal logic
         const modal = document.getElementById('editModal');
         
         function openEditModal() {
@@ -305,20 +283,19 @@
 
         function closeModal() {
             modal.style.display = 'none';
-            // Reset file input so the same file can be selected again if needed
             document.getElementById('fileInput').value = ''; 
         }
 
-        // Extremely fast save function - no image processing here, just text
+        // Fast save text only (images are handled separately)
         function saveModalData() {
             const newName = document.getElementById('inputName').value.trim();
             const newDob = document.getElementById('inputDob').value.trim();
             
-            if(newName) {
+            if (newName) {
                 document.getElementById('name').textContent = newName;
                 localStorage.setItem('isic_name', newName);
             }
-            if(newDob) {
+            if (newDob) {
                 document.getElementById('dob').textContent = newDob;
                 localStorage.setItem('isic_dob', newDob);
             }
@@ -327,7 +304,7 @@
             closeModal();
         }
 
-        // Process image silently in the background right after selection
+        // Handle image upload and resize automatically
         function handleImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -336,12 +313,12 @@
             reader.onload = function(e) {
                 const img = new Image();
                 img.onload = function() {
+                    // Compress image to save localstorage space
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 350; // Keeps file size very small for localStorage
+                    const MAX_WIDTH = 400; 
                     let width = img.width;
                     let height = img.height;
 
-                    // Calculate aspect ratio for resizing
                     if (width > MAX_WIDTH) {
                         height *= MAX_WIDTH / width;
                         width = MAX_WIDTH;
@@ -353,17 +330,19 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // Compress to Base64 (JPEG, 70% quality)
-                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7); 
+                    // Compress to JPEG Base64
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8); 
                     
-                    // Update UI immediately
-                    document.getElementById('photo').src = compressedBase64;
+                    // Display image
+                    const photoEl = document.getElementById('photo');
+                    photoEl.src = compressedBase64;
+                    photoEl.style.display = 'block';
                     
-                    // Save to local storage silently
+                    // Save to local storage
                     try {
                         localStorage.setItem('isic_photo', compressedBase64);
-                    } catch (e) {
-                        console.error("Storage limit exceeded, photo not saved persistently.", e);
+                    } catch (err) {
+                        console.error("Storage limit exceeded", err);
                     }
                 };
                 img.src = e.target.result;
