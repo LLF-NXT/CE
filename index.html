@@ -2,39 +2,343 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <!-- Meta PWA strictement selon les consignes -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#ffffff">
     <meta name="apple-mobile-web-app-title" content="ISIC">
     <title>Carte Étudiante</title>
     
-    <script src="https://cdn.tailwindcss.com"></script>
-    
     <style>
-        body { 
-            background-color: white; 
+        html, body { 
+            background-color: #ffffff !important; 
             margin: 0; 
+            padding: 0; 
+            width: 100%; 
+            height: 100dvh; /* 100dvh gère parfaitement la barre d'URL dynamique d'iOS */
+            box-sizing: border-box;
             overflow: hidden; 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start; 
             font-family: -apple-system, sans-serif; 
             -webkit-user-select: none;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
 
-        .app-container { 
-            width: 100%; 
-            height: calc(100dvh - 55px); 
-            margin-top: 55px; 
+        body { 
+            /* Gère l'encoche de la caméra de n'importe quel iPhone */
+            padding-top: max(env(safe-area-inset-top), 45px); 
+        }
+
+        /* Conteneur de la carte selon les consignes strictes */
+        #card {
+            aspect-ratio: 576 / 1024; 
+            height: calc(100dvh - max(env(safe-area-inset-top), 45px)); 
+            max-height: 100%; 
+            width: auto; 
+            max-width: 100%; 
+            position: relative; 
             background-image: url('background.jpg'); 
             background-size: 100% 100%; 
-            background-position: center top;
-            background-repeat: no-repeat;
-            position: relative; 
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            /* container-type permet d'utiliser cqw pour le texte responsif */
+            container-type: inline-size;
         }
 
         @keyframes blink {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.4; transform: scale(0.9); }
+        }
+
+        .dot {
+            position: absolute;
+            top: 7.2%; 
+            left: 13.5%; 
+            width: 12px; 
+            height: 12px; 
+            background-color: #4dc0bb; 
+            border-radius: 50%; 
+            animation: blink 1s infinite;
+        }
+
+        #clock {
+            position: absolute;
+            top: 7%; 
+            right: 4.5%; 
+            color: white; 
+            font-size: 2.2cqw;
+            font-variant-numeric: tabular-nums;
+        }
+
+        #isic {
+            position: absolute;
+            top: 15.5%; 
+            right: 5%; 
+            color: black; 
+            font-size: 2.2cqw;
+            font-weight: 500;
+        }
+
+        #photo {
+            position: absolute;
+            top: 25.4%; 
+            left: 32.5%; 
+            width: 35%; 
+            height: 23%; 
+            object-fit: cover; 
+            border-radius: 4px;
+            background-color: #e0e0e0;
+        }
+
+        .hitbox {
+            position: absolute;
+            top: 27%; 
+            right: 5%; 
+            width: 25%; 
+            height: 12%; 
+            cursor: pointer; 
+            z-index: 10;
+        }
+
+        #name {
+            position: absolute;
+            top: 51.5%; 
+            left: 0; 
+            width: 100%; 
+            text-align: center; 
+            font-weight: bold; 
+            font-size: 4cqw; 
+            color: #111;
+        }
+
+        #validity {
+            position: absolute;
+            top: 66%; 
+            left: 8.5%; 
+            font-size: 2.8cqw; 
+            font-weight: bold;
+            color: #222;
+        }
+
+        #dob {
+            position: absolute;
+            top: 66%; 
+            right: 12%; 
+            font-size: 2.8cqw; 
+            font-weight: bold;
+            color: #222;
+        }
+
+        /* UI Modale personnalisée (meilleure UX sur iOS que prompt) */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            width: 85%;
+            max-width: 320px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        
+        .modal-content input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .modal-content button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="card">
+        <div class="dot"></div>
+        <div id="clock">DD-MM-YYYY | HH:MM:SS</div>
+        <div id="isic">S 000 000 000 000 X</div>
+        
+        <!-- Photo par défaut (avatar gris) -->
+        <img id="photo" src="data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22100%25%22%20height%3D%22100%25%22%20viewBox%3D%220%200%20100%20100%22%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20fill%3D%22%23e0e0e0%22%2F%3E%3Cpath%20d%3D%22M50%2030a12%2012%200%201%200%200%2024%2012%2012%200%200%200%200-24zm0%2030c-13.3%200-40%206.7-40%2020v5h80v-5c0-13.3-26.7-20-40-20z%22%20fill%3D%22%239e9e9e%22%2F%3E%3C%2Fsvg%3E" alt="Profil">
+        
+        <div class="hitbox" onclick="openEditModal()"></div>
+        
+        <div id="name">Karolína Veselá</div>
+        <div id="validity">09/2026 – 12/2027</div>
+        <div id="dob">21. 03. 2000</div>
+        
+        <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
+    </div>
+
+    <!-- Modale de modification -->
+    <div id="editModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 style="margin-top:0; color:#333;">Modifier les infos</h3>
+            <input type="text" id="inputName" placeholder="Prénom Nom">
+            <input type="text" id="inputDob" placeholder="DD. MM. YYYY">
+            <button style="background-color: #f0f0f0; color: #333;" onclick="document.getElementById('fileInput').click()">📸 Changer la photo</button>
+            <button style="background-color: #4dc0bb; color: white;" onclick="saveModalData()">Enregistrer</button>
+            <button style="background-color: transparent; color: #888; margin-bottom: 0;" onclick="closeModal()">Annuler</button>
+        </div>
+    </div>
+
+    <script>
+        // Generate Dynamic Apple Touch Icon
+        (function generateIcon() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, 512, 512);
+            ctx.fillStyle = '#4dc0bb';
+            ctx.font = 'bold 160px -apple-system, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('ISIC', 256, 256);
+            const link = document.createElement('link');
+            link.rel = 'apple-touch-icon';
+            link.href = canvas.toDataURL('image/png');
+            document.head.appendChild(link);
+        })();
+
+        // Mise à jour de l'horloge
+        function updateClock() {
+            const now = new Date();
+            const d = String(now.getDate()).padStart(2, '0');
+            const mo = String(now.getMonth() + 1).padStart(2, '0');
+            const y = now.getFullYear();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clock').textContent = `${d}-${mo}-${y} | ${h}:${m}:${s}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Génération automatique Validité
+        function setValidity() {
+            const now = new Date();
+            const month = now.getMonth() + 1;
+            let startYear = now.getFullYear();
+            if (month < 8) startYear -= 1; // Si on est avant août, on est sur l'année scolaire précédente
+            document.getElementById('validity').textContent = `09/${startYear} – 12/${startYear + 1}`;
+        }
+        setValidity();
+
+        // Génération / Récupération numéro ISIC
+        function initISIC() {
+            let isic = localStorage.getItem('isic_number');
+            if (!isic) {
+                const random12 = Array.from({length: 12}, () => Math.floor(Math.random() * 10)).join('');
+                isic = `S ${random12.substring(0,3)} ${random12.substring(3,6)} ${random12.substring(6,9)} ${random12.substring(9,12)} X`;
+                localStorage.setItem('isic_number', isic);
+            }
+            document.getElementById('isic').textContent = isic;
+        }
+        initISIC();
+
+        // Chargement des données au démarrage
+        function loadData() {
+            const name = localStorage.getItem('isic_name');
+            if (name) document.getElementById('name').textContent = name;
+            
+            const dob = localStorage.getItem('isic_dob');
+            if (dob) document.getElementById('dob').textContent = dob;
+            
+            const photo = localStorage.getItem('isic_photo');
+            if (photo) document.getElementById('photo').src = photo;
+        }
+        loadData();
+
+        // Logique de la Modale (Remplace prompt() pour une meilleure expérience)
+        const modal = document.getElementById('editModal');
+        function openEditModal() {
+            document.getElementById('inputName').value = document.getElementById('name').textContent;
+            document.getElementById('inputDob').value = document.getElementById('dob').textContent;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        function saveModalData() {
+            const newName = document.getElementById('inputName').value.trim();
+            const newDob = document.getElementById('inputDob').value.trim();
+            
+            if(newName) {
+                document.getElementById('name').textContent = newName;
+                localStorage.setItem('isic_name', newName);
+            }
+            if(newDob) {
+                document.getElementById('dob').textContent = newDob;
+                localStorage.setItem('isic_dob', newDob);
+            }
+            closeModal();
+        }
+
+        // Gestion et compression de la photo
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 400; // Largeur max pour économiser le storage
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7); // 70% quality
+                    document.getElementById('photo').src = compressedBase64;
+                    localStorage.setItem('isic_photo', compressedBase64);
+                }
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html>            50% { opacity: 0.4; transform: scale(0.9); }
         }
 
         .dot {
