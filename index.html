@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- PWA iOS Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#ffffff">
@@ -12,23 +11,22 @@
     <title>Carte Étudiante</title>
     
     <script>
-        // Générer dynamiquement l'icône d'application iOS
         (function() {
             const canvas = document.createElement('canvas');
             canvas.width = 512;
             canvas.height = 512;
             const ctx = canvas.getContext('2d');
             
-            // Fond de l'icône (#4dc0bb)
+            // Fond cyan
             ctx.fillStyle = '#4dc0bb';
             ctx.fillRect(0, 0, 512, 512);
             
-            // Texte de l'icône "ISIC"
+            // Texte ISIC
             ctx.fillStyle = '#ffffff';
             ctx.font = 'bold 160px -apple-system, Arial, sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText('ISIC', 256, 276); // Légèrement décalé vers le bas
+            ctx.fillText('ISIC', 256, 276); 
             
             const link = document.createElement('link');
             link.rel = 'apple-touch-icon';
@@ -53,129 +51,133 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             user-select: none;
             -webkit-user-select: none;
+            display: flex;
+            align-items: flex-start; /* Aligne la carte tout en haut */
+            justify-content: center;
         }
 
         .card {
             width: 100vw;
             max-width: 100%;
-            aspect-ratio: 1080 / 1920;
+            aspect-ratio: 1080 / 1920; /* Ratio strict de l'image */
             position: relative;
             background-image: url('background.jpg');
             background-size: cover;
             background-position: top center;
             overflow: hidden;
-            margin: 0 auto;
         }
 
-        /* Top Bar */
         .top-bar {
             position: absolute;
-            top: 4.2%;
-            left: 6%;
-            right: 6%;
+            top: 6.2%;
+            left: 5%;
+            right: 5%;
             color: white;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-family: sans-serif;
-            font-size: 4vw;
         }
 
         .status {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-weight: 500;
+            font-weight: bold;
+            font-size: 16px;
         }
 
         .dot {
-            width: 3.5vw;
-            height: 3.5vw;
-            background-color: #4dc0bb;
+            width: 15px;
+            height: 15px;
+            background-color: #39ff14; /* Vert néon */
             border-radius: 50%;
-            animation: pulse 1.5s infinite ease-in-out;
+            box-shadow: 0 0 10px #39ff14, 0 0 20px #39ff14; /* Effet néon plus prononcé */
+            animation: pulse 1.2s infinite alternate ease-in-out;
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.3; transform: scale(0.9); }
+            0% { opacity: 0.6; box-shadow: 0 0 5px #39ff14; transform: scale(0.95); }
+            100% { opacity: 1; box-shadow: 0 0 15px #39ff14, 0 0 25px #39ff14; transform: scale(1.05); }
         }
 
         .clock-display {
             font-weight: 400;
             font-variant-numeric: tabular-nums;
+            font-size: 15px;
         }
 
-        /* ISIC Number */
         .isic-number {
             position: absolute;
-            top: 15.8%;
-            right: 9%;
+            top: 15.5%;
+            left: 63.5%;
             font-family: sans-serif;
-            font-size: 3.5vw;
-            color: #1a1a1a;
-            letter-spacing: 1px;
+            font-size: 14px;
+            color: #000;
+            letter-spacing: 0.5px;
             font-weight: 500;
         }
 
-        /* Profile Picture */
         .profile-pic {
             position: absolute;
-            top: 27%;
+            top: 25.4%;
             left: 50%;
             transform: translateX(-50%);
-            width: 34%;
-            height: 22.5%;
+            width: 31%; /* Légèrement plus petite */
+            height: 21%;
             object-fit: cover;
-            background-color: rgba(220, 220, 220, 0.5); /* Placeholder gris */
-            border-radius: 4px;
+            background-color: #f0f0f0;
+            border-radius: 2px;
             z-index: 2;
         }
 
-        /* Text Elements */
         .name {
             position: absolute;
-            top: 50.5%;
-            width: 100%;
+            top: 51%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
             text-align: center;
             font-family: sans-serif;
-            font-size: 5.5vw;
+            font-size: 20px;
             font-weight: bold;
-            color: #113643;
+            color: #000;
         }
 
         .validity {
             position: absolute;
-            top: 66.5%;
-            left: 15%;
+            top: 67.5%;
+            left: 24.5%; /* Positionnée et centrée autour de ce point */
+            transform: translateX(-50%);
             font-family: sans-serif;
-            font-size: 3.5vw;
+            font-size: 16px;
             font-weight: bold;
-            color: #113643;
+            color: #000;
+            white-space: nowrap;
         }
 
         .birthdate {
             position: absolute;
-            top: 66.5%;
-            right: 15%;
+            top: 67.5%;
+            left: 77.5%; /* Positionnée et centrée autour de ce point */
+            transform: translateX(-50%);
             font-family: sans-serif;
-            font-size: 3.5vw;
+            font-size: 16px;
             font-weight: bold;
-            color: #113643;
+            color: #000;
+            white-space: nowrap;
         }
 
-        /* Hitbox */
         .hitbox {
             position: absolute;
-            top: 26%;
-            right: 5%;
+            top: 25%;
+            left: 68%;
             width: 25%;
             height: 12%;
             z-index: 10;
             cursor: pointer;
         }
 
-        /* Modal */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -212,7 +214,7 @@
             margin-bottom: 12px;
             border: 1px solid #ddd;
             border-radius: 8px;
-            font-size: 16px; /* Prevents iOS auto-zoom */
+            font-size: 16px;
             font-family: inherit;
             background-color: #f9f9f9;
             outline: none;
@@ -250,9 +252,9 @@
         <div class="top-bar">
             <div class="status">
                 <div class="dot"></div>
-                VALIDE
+                &lt; VALIDE
             </div>
-            <div class="clock-display" id="clock">--:--:--</div>
+            <div class="clock-display" id="clock">---MM-YYYY | HH:MM:SS</div>
         </div>
         
         <div class="isic-number" id="isic">S 000 000 000 000 X</div>
@@ -284,7 +286,7 @@
     </div>
 
     <script>
-        // 1. Horloge en temps réel
+        // Update the real-time clock
         function updateClock() {
             const now = new Date();
             const d = String(now.getDate()).padStart(2, '0');
@@ -298,7 +300,7 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // 2. Générer ou récupérer le numéro ISIC
+        // Generate or fetch random ISIC number
         function initISIC() {
             let isic = localStorage.getItem('isic_number');
             if (!isic) {
@@ -310,15 +312,20 @@
             document.getElementById('isic').textContent = isic;
         }
 
-        // 3. Calculer la date de validité par défaut
+        // Calculate dynamic validity based on current school year
         function getDefaultValidity() {
             const now = new Date();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const year = now.getFullYear();
-            return `${month}/${year} - 12/${year + 1}`;
+            const currentMonth = now.getMonth() + 1;
+            const currentYear = now.getFullYear();
+            
+            // If before September, school year started last year
+            const startYear = currentMonth >= 9 ? currentYear : currentYear - 1;
+            const endYear = startYear + 1;
+            
+            return `09/${startYear} - 12/${endYear}`;
         }
 
-        // 4. Charger les données sauvegardées
+        // Load all saved data from localStorage
         function loadData() {
             initISIC();
 
@@ -344,7 +351,6 @@
         }
         loadData();
 
-        // 5. Logique du Modal
         const modal = document.getElementById('editModal');
         
         function openModal() {
@@ -360,7 +366,6 @@
         }
 
         function saveModal() {
-            // Sauvegarde immédiate des textes
             const newName = document.getElementById('inputName').value.trim();
             const newBirth = document.getElementById('inputBirthdate').value.trim();
             const newValidity = document.getElementById('inputValidity').value.trim();
@@ -381,7 +386,7 @@
             closeModal();
         }
 
-        // 6. Gestion asynchrone de l'image (FileReader + Compression Canvas)
+        // Photo upload with compression for LocalStorage limits
         function handleImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -390,7 +395,6 @@
             reader.onload = function(e) {
                 const img = new Image();
                 img.onload = function() {
-                    // Création du canvas pour redimensionnement
                     const canvas = document.createElement('canvas');
                     const MAX_WIDTH = 500;
                     let width = img.width;
@@ -407,19 +411,16 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // Conversion Base64 compressée
                     const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7); 
                     
-                    // Mise à jour de l'UI
                     const photoEl = document.getElementById('photo');
                     photoEl.src = compressedBase64;
                     photoEl.style.backgroundColor = 'transparent';
                     
-                    // Sauvegarde asynchrone dans le localStorage
                     try {
                         localStorage.setItem('isic_photo', compressedBase64);
                     } catch (err) {
-                        console.error("Quota localStorage dépassé ou erreur de sauvegarde", err);
+                        console.error("Quota localStorage dépassé", err);
                     }
                 };
                 img.src = e.target.result;
