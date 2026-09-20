@@ -10,15 +10,17 @@
     <title>Carte Étudiante</title>
     
     <style>
-        /* Reset and strict white body layout */
+        /* Strict white body layout, aligned to top to avoid vertical stretch */
         html, body {
-            background-color: #ffffff !important;
+            background-color: white !important;
             margin: 0;
             padding: 0;
+            padding-top: env(safe-area-inset-top, 25px);
             width: 100%;
             height: 100dvh;
             display: flex;
             justify-content: center;
+            align-items: flex-start; /* Aligns to top instead of center */
             overflow: hidden;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             -webkit-user-select: none;
@@ -26,22 +28,33 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Container that strictly respects the 576/1024 ratio and iOS notch */
-        #card {
-            aspect-ratio: 576 / 1024;
-            /* Start perfectly below the notch */
-            margin-top: env(safe-area-inset-top, 47px);
-            /* Max height fits exactly what is left on screen */
-            max-height: calc(100dvh - env(safe-area-inset-top, 47px));
-            height: 100%;
-            max-width: 100vw;
+        /* Container that STRICTLY respects the 576/1024 ratio based on width */
+        .card-container {
             position: relative;
+            width: 100vw;
+            max-width: 500px;
+            aspect-ratio: 576 / 1024;
             background-image: url('background.jpg');
             background-size: 100% 100%;
-            background-position: center;
-            background-repeat: no-repeat;
+            margin-top: 10px; /* Moved slightly up */
+            overflow: hidden;
             /* Container queries for responsive fonts inside the card */
             container-type: inline-size;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05); /* Optional: slight shadow for depth on white bg */
+        }
+
+        /* Top Bar Elements */
+        #top-left {
+            position: absolute;
+            top: 2.2%;
+            left: 5%;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #fff;
+            font-size: 3cqi;
+            font-weight: 500;
+            letter-spacing: 0.5px;
         }
 
         @keyframes blink {
@@ -50,10 +63,7 @@
         }
 
         .dot {
-            position: absolute;
-            top: 3.5%;
-            left: 14%;
-            width: 2.5cqi;
+            width: 2.8cqi;
             aspect-ratio: 1;
             background-color: #4dc0bb;
             border-radius: 50%;
@@ -62,76 +72,81 @@
         
         #clock {
             position: absolute;
-            top: 3.5%;
+            top: 2.2%;
             right: 5%;
-            color: white;
+            color: #fff;
             font-size: 2.8cqi;
             font-variant-numeric: tabular-nums;
-            font-weight: 500;
+            font-weight: 400;
         }
 
+        /* ISIC Number */
         #isic {
             position: absolute;
             top: 14%;
-            right: 10%;
-            color: black;
-            font-size: 2.8cqi;
-            font-weight: 600;
+            right: 8%;
+            color: #111;
+            font-size: 2.6cqi;
+            font-weight: 500;
             letter-spacing: 0.5px;
         }
 
+        /* Profile Photo perfectly fitted to white box */
         #photo {
             position: absolute;
-            top: 24%;
-            left: 32%;
-            width: 36%;
-            height: 24%;
+            top: 25.5%;
+            left: 32.5%;
+            width: 35%;
+            height: 23%;
             object-fit: cover;
             border-radius: 5px;
             z-index: 2;
             display: none; /* Hidden by default if no image */
+            background-color: #f0f0f0;
         }
 
         /* Invisible hitbox over HEC logo */
         .hitbox {
             position: absolute;
-            top: 25%;
+            top: 28%;
             right: 5%;
-            width: 25%;
+            width: 30%;
             height: 15%;
             cursor: pointer;
             z-index: 10;
         }
 
+        /* Text Elements */
         #name {
             position: absolute;
-            top: 50.5%;
+            top: 51%;
             left: 0;
             width: 100%;
             text-align: center;
             font-weight: bold;
             font-size: 4.8cqi;
-            color: #111;
+            color: #222;
         }
 
         #validity {
             position: absolute;
             top: 66.5%;
-            left: 10%;
+            left: 8%;
             font-size: 3.2cqi;
-            font-weight: bold;
-            color: #111;
+            font-weight: 600;
+            color: #222;
         }
 
         #dob {
             position: absolute;
             top: 66.5%;
-            right: 15%;
+            right: 10%;
             font-size: 3.2cqi;
-            font-weight: bold;
-            color: #111;
+            font-weight: 600;
+            color: #222;
         }
 
+        /* Modal Styling */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -146,7 +161,7 @@
 
         .modal-content {
             background: white;
-            border-radius: 14px;
+            border-radius: 16px;
             padding: 24px;
             width: 85%;
             max-width: 320px;
@@ -159,16 +174,17 @@
             box-sizing: border-box;
             padding: 14px;
             margin-bottom: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 16px; /* 16px prevents iOS Safari zoom */
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px; /* Prevents iOS Safari zoom */
             font-family: inherit;
+            background-color: #fafafa;
         }
 
         .btn {
             width: 100%;
             padding: 14px;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 16px;
             font-weight: bold;
             border: none;
@@ -176,17 +192,24 @@
             margin-bottom: 10px;
             display: block;
             box-sizing: border-box;
+            transition: opacity 0.2s;
         }
 
+        .btn:active { opacity: 0.7; }
         .btn-photo { background-color: #f0f0f0; color: #333; border: 1px solid #ddd; }
         .btn-save { background-color: #4dc0bb; color: white; margin-top: 10px; }
-        .btn-cancel { background-color: transparent; color: #888; font-weight: normal; margin-bottom: 0; }
+        .btn-cancel { background-color: transparent; color: #888; font-weight: normal; margin-bottom: 0; padding-bottom: 5px; }
     </style>
 </head>
 <body>
 
-    <div id="card">
-        <div class="dot"></div>
+    <div class="card-container">
+        
+        <div id="top-left">
+            <div class="dot"></div>
+            <span>VALIDE</span>
+        </div>
+        
         <div id="clock">DD-MM-YYYY | HH:MM:SS</div>
         
         <div id="isic">S 000 000 000 000 X</div>
@@ -197,27 +220,29 @@
         <div class="hitbox" onclick="openEditModal()"></div>
         
         <div id="name">Prénom Nom</div>
-        <div id="validity">09/2026 – 12/2027</div>
-        <div id="dob">DD. MM. YYYY</div>
         
+        <div id="validity">09/2024 – 12/2025</div>
+        <div id="dob">21. 03. 2000</div>
+        
+        <!-- Hidden file input for photo upload -->
         <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
     </div>
 
     <div id="editModal" class="modal-overlay">
         <div class="modal-content">
-            <h3 style="margin-top:0; color:#333; font-size: 18px;">Modifier la carte</h3>
+            <h3 style="margin-top:0; color:#333; font-size: 18px; margin-bottom: 20px;">Modifier la carte</h3>
             
             <input type="text" id="inputName" placeholder="Prénom Nom">
             <input type="text" id="inputDob" placeholder="DD. MM. YYYY">
             
-            <button class="btn btn-photo" onclick="document.getElementById('fileInput').click()">📸 Photo de profil</button>
+            <button class="btn btn-photo" onclick="document.getElementById('fileInput').click()">📸 Modifier la photo</button>
             <button class="btn btn-save" onclick="saveModalData()">Enregistrer</button>
-            <button class="btn btn-cancel" onclick="closeModal()">Annuler</button>
+            <button class="btn btn-cancel" onclick="closeModal()">Fermer</button>
         </div>
     </div>
 
     <script>
-        // Real-time clock update
+        // Real-time clock update (DD-MM-YYYY | HH:MM:SS)
         function updateClock() {
             const now = new Date();
             const d = String(now.getDate()).padStart(2, '0');
@@ -236,7 +261,8 @@
             const now = new Date();
             const month = now.getMonth() + 1;
             let startYear = now.getFullYear();
-            if (month < 8) startYear -= 1; // Before August is previous academic year
+            // French academic year starts in September
+            if (month < 8) startYear -= 1; 
             document.getElementById('validity').textContent = `09/${startYear} - 12/${startYear + 1}`;
         }
         setValidity();
@@ -255,7 +281,7 @@
         }
         initISIC();
 
-        // Load saved text and photo data from localStorage
+        // Load saved text and photo data from localStorage instantly
         function loadData() {
             const name = localStorage.getItem('isic_name');
             if (name) document.getElementById('name').textContent = name;
@@ -267,12 +293,12 @@
             const photoEl = document.getElementById('photo');
             if (photo) {
                 photoEl.src = photo;
-                photoEl.style.display = 'block'; // Make it visible if exists
+                photoEl.style.display = 'block'; // Make it visible
             }
         }
         loadData();
 
-        // Modal logic
+        // Modal interactions
         const modal = document.getElementById('editModal');
         
         function openEditModal() {
@@ -283,10 +309,10 @@
 
         function closeModal() {
             modal.style.display = 'none';
-            document.getElementById('fileInput').value = ''; 
+            document.getElementById('fileInput').value = ''; // Reset file input
         }
 
-        // Fast save text only (images are handled separately)
+        // Fast save text only (images are saved independently on change)
         function saveModalData() {
             const newName = document.getElementById('inputName').value.trim();
             const newDob = document.getElementById('inputDob').value.trim();
@@ -300,11 +326,10 @@
                 localStorage.setItem('isic_dob', newDob);
             }
             
-            // Instantly close modal
             closeModal();
         }
 
-        // Handle image upload and resize automatically
+        // Handle image upload, compress automatically, and display
         function handleImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -313,7 +338,7 @@
             reader.onload = function(e) {
                 const img = new Image();
                 img.onload = function() {
-                    // Compress image to save localstorage space
+                    // Compress image via Canvas to respect localStorage quota limits
                     const canvas = document.createElement('canvas');
                     const MAX_WIDTH = 400; 
                     let width = img.width;
@@ -330,10 +355,10 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // Compress to JPEG Base64
+                    // Compress to JPEG Base64 (80% quality)
                     const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8); 
                     
-                    // Display image
+                    // Display image instantly
                     const photoEl = document.getElementById('photo');
                     photoEl.src = compressedBase64;
                     photoEl.style.display = 'block';
@@ -342,7 +367,7 @@
                     try {
                         localStorage.setItem('isic_photo', compressedBase64);
                     } catch (err) {
-                        console.error("Storage limit exceeded", err);
+                        console.error("Storage limit exceeded, cannot save photo", err);
                     }
                 };
                 img.src = e.target.result;
