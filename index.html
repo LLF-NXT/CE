@@ -42,7 +42,7 @@
         }
 
         body, html {
-            background-color: white; /* Fond purement blanc pour le body */
+            background-color: white;
             margin: 0;
             padding: 0;
             width: 100%;
@@ -53,7 +53,6 @@
             -webkit-user-select: none;
         }
 
-        /* L'espaceur vierge de 100px pour repousser la carte sous le Dynamic Island */
         .ios-spacer {
             width: 100%;
             height: 100px;
@@ -61,14 +60,13 @@
             display: block;
         }
 
-        /* Conteneur principal avec le ratio strict de l'image de fond */
         .card-container {
             width: 100vw;
-            max-width: 500px; /* Sécurité pour iPad/Desktop */
+            max-width: 500px;
             margin: 0 auto;
             aspect-ratio: 1080 / 1920; 
             position: relative;
-            background-image: url('bg.jpg'); /* Mise à jour du nom du fichier */
+            background-image: url('bg.jpg'); /* Pointe désormais vers le nouveau fichier bg.jpg */
             background-size: 100% 100%; 
             background-position: top center;
             background-repeat: no-repeat;
@@ -78,7 +76,7 @@
 
         .top-bar {
             position: absolute;
-            top: 4.5%; /* Légèrement ajusté pour correspondre à la barre arrondie */
+            top: 4.5%;
             left: 5%;
             right: 5%;
             color: white;
@@ -179,7 +177,6 @@
             white-space: nowrap;
         }
 
-        /* Hitbox pour le menu de modification (logo HEC) */
         .hitbox {
             position: absolute;
             top: 25%;
@@ -190,7 +187,6 @@
             cursor: pointer;
         }
 
-        /* Menu de modification (Modal) */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -261,7 +257,6 @@
 </head>
 <body>
 
-    <!-- Bloc de 100px pour contrer le comportement plein écran d'iOS PWA -->
     <div class="ios-spacer"></div>
 
     <div class="card-container">
@@ -275,21 +270,17 @@
         
         <div class="isic-number" id="isic">S 000 000 000 000 X</div>
         
-        <!-- Photo de profil -->
         <img class="profile-pic" id="photo" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Profil">
         
-        <!-- Zone cliquable HEC -->
         <div class="hitbox" onclick="openModal()"></div>
         
         <div class="name" id="name">Karolína Veselá</div>
         <div class="validity" id="validity">09/2026 - 12/2027</div>
         <div class="birthdate" id="birthdate">21. 03. 2000</div>
         
-        <!-- Input caché pour la photo -->
         <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
     </div>
 
-    <!-- Modale de modification -->
     <div id="editModal" class="modal-overlay">
         <div class="modal-content">
             <h3>Modifier les informations</h3>
@@ -304,7 +295,6 @@
     </div>
 
     <script>
-        // Horloge temps réel (Format DD-MM-YYYY | HH:MM:SS)
         function updateClock() {
             const now = new Date();
             const d = String(now.getDate()).padStart(2, '0');
@@ -318,7 +308,6 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Génération automatique du numéro ISIC s'il n'existe pas
         function initISIC() {
             let isic = localStorage.getItem('isic_number');
             if (!isic) {
@@ -329,20 +318,17 @@
             document.getElementById('isic').textContent = isic;
         }
 
-        // Calcul automatique de la validité (Année scolaire en cours)
         function calculateValidity() {
             const now = new Date();
-            const currentMonth = now.getMonth(); // 0 = Janvier, 7 = Août, 8 = Septembre
+            const currentMonth = now.getMonth(); 
             const currentYear = now.getFullYear();
             
-            // L'année commence en septembre.
             const startYear = currentMonth >= 7 ? currentYear : currentYear - 1;
             const endYear = startYear + 1;
             
             return `09/${startYear} - 12/${endYear}`;
         }
 
-        // Chargement des données au démarrage
         function loadData() {
             initISIC();
             document.getElementById('validity').textContent = calculateValidity();
@@ -360,7 +346,6 @@
         }
         loadData();
 
-        // Gestion de la modale
         const modal = document.getElementById('editModal');
         
         function openModal() {
@@ -374,7 +359,6 @@
             document.getElementById('fileInput').value = ''; 
         }
 
-        // Sauvegarde instantanée sans bloquer l'interface
         function saveModal() {
             const newName = document.getElementById('inputName').value.trim();
             const newBirth = document.getElementById('inputBirthdate').value.trim();
@@ -391,7 +375,6 @@
             closeModal();
         }
 
-        // Traitement et compression de l'image pour respecter les limites du navigateur
         function handleImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -416,7 +399,6 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // Compression en jpeg pour la légèreté
                     const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7); 
                     document.getElementById('photo').src = compressedBase64;
                     
