@@ -53,7 +53,7 @@
             -webkit-user-select: none;
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* Aligne la carte tout en haut */
+            align-items: flex-start;
         }
 
         .card-container {
@@ -61,17 +61,16 @@
             max-width: 500px;
             aspect-ratio: 1080 / 1920; 
             position: relative;
-            background-image: url('bg.jpg'); /* Votre nouveau background */
+            background-image: url('bg.jpg');
             background-size: 100% 100%; 
             background-position: top center;
             background-repeat: no-repeat;
             container-type: inline-size;
         }
 
-        /* La barre noire en haut */
         .top-bar {
             position: absolute;
-            top: 10.5%; /* Descendu pour être dans la barre noire */
+            top: 10.5%; 
             left: 6%;
             right: 6%;
             color: white;
@@ -109,10 +108,9 @@
             font-variant-numeric: tabular-nums;
         }
 
-        /* Numéro de carte ISIC */
         .isic-number {
             position: absolute;
-            top: 18.5%; /* Ajusté pour la nouvelle maquette */
+            top: 18.5%; 
             right: 7%; 
             text-align: right;
             font-family: sans-serif;
@@ -122,23 +120,21 @@
             font-weight: 600;
         }
 
-        /* Photo de profil */
         .profile-pic {
             position: absolute;
-            top: 29.5%; /* Descendu pour le nouvel encart blanc */
-            left: 33.2%;
-            width: 33.6%;
-            height: 22.5%;
+            top: 30%; /* Légèrement baissée */
+            left: 32.8%; /* Ré-ajustée pour rester centrée */
+            width: 34.4%; /* Légèrement agrandie */
+            height: 23%; /* Légèrement agrandie */
             object-fit: cover;
             background-color: #f4f4f4;
-            border-radius: 12px; 
+            border-radius: 8px; /* Arrondi moins important */
             z-index: 2;
         }
 
-        /* Textes */
         .name {
             position: absolute;
-            top: 55%; /* Descendu sous la photo */
+            top: 53.5%; /* Légèrement remonté */
             left: 0;
             width: 100%;
             text-align: center;
@@ -150,9 +146,9 @@
 
         .validity {
             position: absolute;
-            top: 67%;
-            left: 10%;
-            width: 40%;
+            top: 69%; /* Abaissé */
+            left: 5%; /* Ajusté pour centrer parfaitement */
+            width: 45%; /* Zone plus large pour garantir le centrage */
             text-align: center;
             font-family: sans-serif;
             font-size: 4.5cqi;
@@ -163,9 +159,9 @@
 
         .birthdate {
             position: absolute;
-            top: 67%;
-            right: 12%; 
-            width: 40%;
+            top: 69%; /* Abaissé */
+            right: 7%; /* Ajusté pour centrer parfaitement */
+            width: 45%; /* Zone plus large pour garantir le centrage */
             text-align: center;
             font-family: sans-serif;
             font-size: 4.5cqi;
@@ -174,7 +170,6 @@
             white-space: nowrap;
         }
 
-        /* Hitbox HEC pour modifier */
         .hitbox {
             position: absolute;
             top: 29%;
@@ -185,7 +180,6 @@
             cursor: pointer;
         }
 
-        /* Modal */
         .modal-overlay {
             display: none;
             position: fixed;
