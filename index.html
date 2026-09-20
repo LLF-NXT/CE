@@ -3,79 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <!-- PWA iOS Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#ffffff">
     <meta name="apple-mobile-web-app-title" content="ISIC">
     <title>Carte Étudiante</title>
     
+    <script>
+        // Générer dynamiquement l'icône d'application iOS au chargement
+        (function() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+            
+            // Fond de l'icône (#4dc0bb)
+            ctx.fillStyle = '#4dc0bb';
+            ctx.fillRect(0, 0, 512, 512);
+            
+            // Texte de l'icône "ISIC"
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 160px -apple-system, Arial, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('ISIC', 256, 276); // Légèrement décalé vers le bas pour l'équilibre visuel
+            
+            const link = document.createElement('link');
+            link.rel = 'apple-touch-icon';
+            link.href = canvas.toDataURL('image/png');
+            document.head.appendChild(link);
+        })();
+    </script>
+
     <style>
-        /* Strict white body layout, aligned to top to avoid vertical stretch */
+        /* Strict CSS reset: NO margins, completely flush to top */
+        * {
+            box-sizing: border-box;
+        }
+
         html, body {
-            background-color: white !important;
+            background-color: #ffffff;
             margin: 0;
             padding: 0;
-            padding-top: env(safe-area-inset-top, 25px);
             width: 100%;
-            height: 100dvh;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* Aligns to top instead of center */
-            overflow: hidden;
+            align-items: flex-start; /* Forcer le collage tout en haut de l'écran */
+            overflow-x: hidden;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             -webkit-user-select: none;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Container that STRICTLY respects the 576/1024 ratio based on width */
+        /* Container that STRICTLY respects the 1080/1920 ratio */
         .card-container {
             position: relative;
             width: 100vw;
-            max-width: 500px;
-            aspect-ratio: 576 / 1024;
+            max-width: 600px; /* Limite de sécurité pour tablettes/ordinateurs */
+            aspect-ratio: 1080 / 1920;
             background-image: url('background.jpg');
             background-size: 100% 100%;
-            margin-top: 10px; /* Moved slightly up */
+            background-position: top center;
+            background-repeat: no-repeat;
+            margin: 0; /* Aucune marge pour rester collé en haut */
+            padding: 0;
             overflow: hidden;
-            /* Container queries for responsive fonts inside the card */
-            container-type: inline-size;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05); /* Optional: slight shadow for depth on white bg */
+            container-type: inline-size; /* Pour utiliser 'cqi' pour les tailles de police */
         }
 
         /* Top Bar Elements */
         #top-left {
             position: absolute;
-            top: 2.2%;
-            left: 5%;
+            top: 4.2%;
+            left: 13.5%;
             display: flex;
             align-items: center;
             gap: 6px;
             color: #fff;
-            font-size: 3cqi;
+            font-size: 3.5cqi;
             font-weight: 500;
-            letter-spacing: 0.5px;
         }
 
         @keyframes blink {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.2; }
+            50% { opacity: 0.1; }
         }
 
         .dot {
-            width: 2.8cqi;
+            width: 3.2cqi;
             aspect-ratio: 1;
             background-color: #4dc0bb;
             border-radius: 50%;
-            animation: blink 1.2s infinite ease-in-out;
+            animation: blink 1.5s infinite ease-in-out;
         }
         
         #clock {
             position: absolute;
-            top: 2.2%;
-            right: 5%;
+            top: 3.8%;
+            right: 4.5%;
             color: #fff;
-            font-size: 2.8cqi;
+            font-size: 3.3cqi;
             font-variant-numeric: tabular-nums;
             font-weight: 400;
         }
@@ -83,34 +114,34 @@
         /* ISIC Number */
         #isic {
             position: absolute;
-            top: 14%;
-            right: 8%;
+            top: 15.2%;
+            right: 9%;
             color: #111;
-            font-size: 2.6cqi;
+            font-size: 3.2cqi;
             font-weight: 500;
             letter-spacing: 0.5px;
         }
 
-        /* Profile Photo perfectly fitted to white box */
+        /* Profile Photo */
         #photo {
             position: absolute;
-            top: 25.5%;
-            left: 32.5%;
-            width: 35%;
-            height: 23%;
+            top: 25.4%;
+            left: 31.4%;
+            width: 37.2%;
+            height: 23.3%;
             object-fit: cover;
-            border-radius: 5px;
+            border-radius: 4px;
             z-index: 2;
-            display: none; /* Hidden by default if no image */
+            display: none;
             background-color: #f0f0f0;
         }
 
         /* Invisible hitbox over HEC logo */
         .hitbox {
             position: absolute;
-            top: 28%;
-            right: 5%;
-            width: 30%;
+            top: 25%;
+            right: 2%;
+            width: 25%;
             height: 15%;
             cursor: pointer;
             z-index: 10;
@@ -119,31 +150,31 @@
         /* Text Elements */
         #name {
             position: absolute;
-            top: 51%;
+            top: 51.5%;
             left: 0;
             width: 100%;
             text-align: center;
             font-weight: bold;
-            font-size: 4.8cqi;
-            color: #222;
+            font-size: 5.5cqi;
+            color: #1a1a1a;
         }
 
         #validity {
             position: absolute;
-            top: 66.5%;
-            left: 8%;
-            font-size: 3.2cqi;
+            top: 66.8%;
+            left: 10%;
+            font-size: 3.8cqi;
             font-weight: 600;
-            color: #222;
+            color: #1a1a1a;
         }
 
         #dob {
             position: absolute;
-            top: 66.5%;
-            right: 10%;
-            font-size: 3.2cqi;
+            top: 66.8%;
+            right: 18%;
+            font-size: 3.8cqi;
             font-weight: 600;
-            color: #222;
+            color: #1a1a1a;
         }
 
         /* Modal Styling */
@@ -151,10 +182,10 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0, 0, 0, 0.5);
             z-index: 9999;
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
             align-items: center;
             justify-content: center;
         }
@@ -164,8 +195,8 @@
             border-radius: 16px;
             padding: 24px;
             width: 85%;
-            max-width: 320px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            max-width: 340px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
             text-align: center;
         }
         
@@ -174,16 +205,22 @@
             box-sizing: border-box;
             padding: 14px;
             margin-bottom: 12px;
-            border: 1px solid #ddd;
+            border: 1px solid #e0e0e0;
             border-radius: 10px;
-            font-size: 16px; /* Prevents iOS Safari zoom */
+            font-size: 16px; /* 16px prevents iOS zoom on focus */
             font-family: inherit;
-            background-color: #fafafa;
+            background-color: #f8f8f8;
+            outline: none;
+        }
+
+        .modal-content input[type="text"]:focus {
+            border-color: #4dc0bb;
+            background-color: #fff;
         }
 
         .btn {
             width: 100%;
-            padding: 14px;
+            padding: 15px;
             border-radius: 10px;
             font-size: 16px;
             font-weight: bold;
@@ -196,9 +233,9 @@
         }
 
         .btn:active { opacity: 0.7; }
-        .btn-photo { background-color: #f0f0f0; color: #333; border: 1px solid #ddd; }
-        .btn-save { background-color: #4dc0bb; color: white; margin-top: 10px; }
-        .btn-cancel { background-color: transparent; color: #888; font-weight: normal; margin-bottom: 0; padding-bottom: 5px; }
+        .btn-photo { background-color: #f0f0f0; color: #333; }
+        .btn-save { background-color: #4dc0bb; color: white; margin-top: 15px; }
+        .btn-cancel { background-color: transparent; color: #888; font-weight: normal; margin-bottom: 0; }
     </style>
 </head>
 <body>
@@ -207,7 +244,7 @@
         
         <div id="top-left">
             <div class="dot"></div>
-            <span>VALIDE</span>
+            <!-- Texte retiré si présent dans l'image, sinon ajoutez un <span> ici -->
         </div>
         
         <div id="clock">DD-MM-YYYY | HH:MM:SS</div>
@@ -216,7 +253,7 @@
         
         <img id="photo" src="" alt="Profil">
         
-        <!-- Hitbox over HEC logo to open settings -->
+        <!-- Hitbox (Zone de clic) sur le logo HEC -->
         <div class="hitbox" onclick="openEditModal()"></div>
         
         <div id="name">Prénom Nom</div>
@@ -230,7 +267,7 @@
 
     <div id="editModal" class="modal-overlay">
         <div class="modal-content">
-            <h3 style="margin-top:0; color:#333; font-size: 18px; margin-bottom: 20px;">Modifier la carte</h3>
+            <h3 style="margin-top:0; color:#111; font-size: 18px; margin-bottom: 20px;">Modifier la carte</h3>
             
             <input type="text" id="inputName" placeholder="Prénom Nom">
             <input type="text" id="inputDob" placeholder="DD. MM. YYYY">
@@ -242,7 +279,7 @@
     </div>
 
     <script>
-        // Real-time clock update (DD-MM-YYYY | HH:MM:SS)
+        // 1. Mise à jour de l'horloge en temps réel
         function updateClock() {
             const now = new Date();
             const d = String(now.getDate()).padStart(2, '0');
@@ -256,22 +293,23 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Calculate dynamic validity based on current academic year
+        // 2. Validité dynamique basée sur l'année scolaire en cours
         function setValidity() {
             const now = new Date();
-            const month = now.getMonth() + 1;
+            const month = now.getMonth() + 1; // 1-12
             let startYear = now.getFullYear();
-            // French academic year starts in September
-            if (month < 8) startYear -= 1; 
+            // L'année académique commence généralement en septembre
+            if (month < 8) { 
+                startYear -= 1; 
+            }
             document.getElementById('validity').textContent = `09/${startYear} - 12/${startYear + 1}`;
         }
         setValidity();
 
-        // Generate or load ISIC number
+        // 3. Génération du numéro ISIC (S suivi de 12 chiffres aléatoires puis X)
         function initISIC() {
             let isic = localStorage.getItem('isic_number');
             if (!isic) {
-                // Generates format "S XXX XXX XXX XXX X"
                 const r = () => Math.floor(Math.random() * 1000).toString().padStart(3, '0');
                 const lastDigit = Math.floor(Math.random() * 10);
                 isic = `S ${r()} ${r()} ${r()} ${r()} ${lastDigit} X`;
@@ -281,7 +319,7 @@
         }
         initISIC();
 
-        // Load saved text and photo data from localStorage instantly
+        // 4. Chargement des données sauvegardées
         function loadData() {
             const name = localStorage.getItem('isic_name');
             if (name) document.getElementById('name').textContent = name;
@@ -293,12 +331,12 @@
             const photoEl = document.getElementById('photo');
             if (photo) {
                 photoEl.src = photo;
-                photoEl.style.display = 'block'; // Make it visible
+                photoEl.style.display = 'block';
             }
         }
         loadData();
 
-        // Modal interactions
+        // 5. Gestion de la modale
         const modal = document.getElementById('editModal');
         
         function openEditModal() {
@@ -309,10 +347,9 @@
 
         function closeModal() {
             modal.style.display = 'none';
-            document.getElementById('fileInput').value = ''; // Reset file input
+            document.getElementById('fileInput').value = ''; 
         }
 
-        // Fast save text only (images are saved independently on change)
         function saveModalData() {
             const newName = document.getElementById('inputName').value.trim();
             const newDob = document.getElementById('inputDob').value.trim();
@@ -325,11 +362,11 @@
                 document.getElementById('dob').textContent = newDob;
                 localStorage.setItem('isic_dob', newDob);
             }
-            
+            // La sauvegarde est immédiate
             closeModal();
         }
 
-        // Handle image upload, compress automatically, and display
+        // 6. Gestion de l'upload d'image avec compression pour localStorage
         function handleImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -338,9 +375,8 @@
             reader.onload = function(e) {
                 const img = new Image();
                 img.onload = function() {
-                    // Compress image via Canvas to respect localStorage quota limits
                     const canvas = document.createElement('canvas');
-                    const MAX_WIDTH = 400; 
+                    const MAX_WIDTH = 400; // Largeur max pour compression
                     let width = img.width;
                     let height = img.height;
 
@@ -355,19 +391,17 @@
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
                     
-                    // Compress to JPEG Base64 (80% quality)
+                    // Conversion en base64 (qualité 80%)
                     const compressedBase64 = canvas.toDataURL('image/jpeg', 0.8); 
                     
-                    // Display image instantly
                     const photoEl = document.getElementById('photo');
                     photoEl.src = compressedBase64;
                     photoEl.style.display = 'block';
                     
-                    // Save to local storage
                     try {
                         localStorage.setItem('isic_photo', compressedBase64);
                     } catch (err) {
-                        console.error("Storage limit exceeded, cannot save photo", err);
+                        console.error("Quota localStorage dépassé", err);
                     }
                 };
                 img.src = e.target.result;
