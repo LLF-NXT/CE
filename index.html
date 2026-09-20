@@ -6,7 +6,7 @@
     
     <!-- Meta PWA stricte -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#ffffff">
     <meta name="apple-mobile-web-app-title" content="ISIC">
     <title>Carte Étudiante</title>
@@ -42,31 +42,38 @@
         }
 
         body, html {
-            background-color: white; margin: 0; padding: 0;
-            width: 100%; min-height: 100vh; overflow-x: hidden;
+            background-color: white;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            user-select: none; -webkit-user-select: none;
+            user-select: none;
+            -webkit-user-select: none;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Aligne la carte tout en haut */
         }
-        
+
         .card-container {
-            width: 100vw; max-width: 500px; margin: 0 auto;
-            /* Remonte légèrement l'ensemble de la carte sur l'écran pour boucher le trou blanc */
-            margin-top: -3vh; 
-            aspect-ratio: 1080 / 1920; position: relative;
-            background-image: url('bg.jpg');
-            /* Étire légèrement et remonte l'image de fond pour l'aligner parfaitement avec tes textes */
-            background-size: 100% 110%; 
-            background-position: center -7.5%; 
-            background-repeat: no-repeat; overflow: hidden;
+            width: 100vw;
+            max-width: 500px;
+            aspect-ratio: 1080 / 1920; 
+            position: relative;
+            background-image: url('bg.jpg'); /* Votre nouveau background */
+            background-size: 100% 100%; 
+            background-position: top center;
+            background-repeat: no-repeat;
             container-type: inline-size;
         }
 
-        /* Nouvelles coordonnées ajustées pour la nouvelle image */
+        /* La barre noire en haut */
         .top-bar {
             position: absolute;
-            top: 2.5%;
-            left: 5%;
-            right: 5%;
+            top: 10.5%; /* Descendu pour être dans la barre noire */
+            left: 6%;
+            right: 6%;
             color: white;
             display: flex;
             justify-content: space-between;
@@ -88,65 +95,67 @@
             height: 14px;
             background-color: #00ff00;
             border-radius: 50%;
-            box-shadow: 0 0 10px #00ff00, 0 0 15px #00ff00, 0 0 20px #00ff00;
+            box-shadow: 0 0 10px #00ff00, 0 0 15px #00ff00;
             animation: blink 1.2s infinite alternate ease-in-out;
         }
 
         @keyframes blink {
-            0% { opacity: 0.6; box-shadow: 0 0 8px #00ff00; transform: scale(0.95); }
-            100% { opacity: 1; box-shadow: 0 0 15px #00ff00, 0 0 25px #00ff00, 0 0 35px #00ff00; transform: scale(1.05); }
+            0% { opacity: 0.6; box-shadow: 0 0 5px #00ff00; transform: scale(0.95); }
+            100% { opacity: 1; box-shadow: 0 0 15px #00ff00, 0 0 20px #00ff00; transform: scale(1.05); }
         }
 
         .clock-display {
             font-weight: 500;
             font-variant-numeric: tabular-nums;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
         }
 
+        /* Numéro de carte ISIC */
         .isic-number {
             position: absolute;
-            top: 15%; 
-            right: 8%; 
+            top: 18.5%; /* Ajusté pour la nouvelle maquette */
+            right: 7%; 
             text-align: right;
             font-family: sans-serif;
-            font-size: 3.2cqi;
-            color: #000;
+            font-size: 3.4cqi;
+            color: #113643;
             letter-spacing: 0.1cqi;
-            font-weight: 500;
+            font-weight: 600;
         }
 
+        /* Photo de profil */
         .profile-pic {
             position: absolute;
-            top: 25.5%;
-            left: 33.5%;
-            width: 33%;
-            height: 21%;
+            top: 29.5%; /* Descendu pour le nouvel encart blanc */
+            left: 33.2%;
+            width: 33.6%;
+            height: 22.5%;
             object-fit: cover;
             background-color: #f4f4f4;
             border-radius: 12px; 
             z-index: 2;
         }
 
+        /* Textes */
         .name {
             position: absolute;
-            top: 50%;
+            top: 55%; /* Descendu sous la photo */
             left: 0;
             width: 100%;
             text-align: center;
             font-family: sans-serif;
-            font-size: 6cqi;
+            font-size: 6.5cqi;
             font-weight: bold;
             color: #113643;
         }
 
         .validity {
             position: absolute;
-            top: 64%;
+            top: 67%;
             left: 10%;
             width: 40%;
             text-align: center;
             font-family: sans-serif;
-            font-size: 4cqi;
+            font-size: 4.5cqi;
             font-weight: bold;
             color: #113643;
             white-space: nowrap;
@@ -154,21 +163,21 @@
 
         .birthdate {
             position: absolute;
-            top: 64%;
+            top: 67%;
             right: 12%; 
             width: 40%;
             text-align: center;
             font-family: sans-serif;
-            font-size: 4cqi;
+            font-size: 4.5cqi;
             font-weight: bold;
             color: #113643;
             white-space: nowrap;
         }
 
-        /* Hitbox pour le menu de modification (logo HEC) */
+        /* Hitbox HEC pour modifier */
         .hitbox {
             position: absolute;
-            top: 25%;
+            top: 29%;
             right: 5%;
             width: 25%;
             height: 15%;
@@ -176,7 +185,7 @@
             cursor: pointer;
         }
 
-        /* Menu de modification (Modal) */
+        /* Modal */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -221,11 +230,6 @@
             -webkit-appearance: none;
         }
 
-        .modal-content input[type="text"]:focus {
-            border-color: #4dc0bb;
-            background-color: #fff;
-        }
-
         .btn {
             width: 100%;
             padding: 14px;
@@ -236,19 +240,14 @@
             cursor: pointer;
             margin-bottom: 10px;
             box-sizing: border-box;
-            transition: opacity 0.2s;
         }
 
-        .btn:active { opacity: 0.7; }
         .btn-photo { background-color: #f0f0f0; color: #113643; }
         .btn-save { background-color: #4dc0bb; color: white; margin-top: 10px; }
-        .btn-cancel { background-color: transparent; color: #888; font-weight: normal; margin-bottom: 0; }
+        .btn-cancel { background-color: transparent; color: #888; margin-bottom: 0; }
     </style>
 </head>
 <body>
-
-    <!-- Bloc de 100px pour contrer le comportement plein écran d'iOS PWA -->
-    <div class="ios-spacer"></div>
 
     <div class="card-container">
         <div class="top-bar">
@@ -261,28 +260,22 @@
         
         <div class="isic-number" id="isic">S 000 000 000 000 X</div>
         
-        <!-- Photo de profil -->
         <img class="profile-pic" id="photo" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Profil">
         
-        <!-- Zone cliquable HEC -->
         <div class="hitbox" onclick="openModal()"></div>
         
         <div class="name" id="name">Karolína Veselá</div>
         <div class="validity" id="validity">09/2026 - 12/2027</div>
         <div class="birthdate" id="birthdate">21. 03. 2000</div>
         
-        <!-- Input caché pour la photo -->
         <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
     </div>
 
-    <!-- Modale de modification -->
     <div id="editModal" class="modal-overlay">
         <div class="modal-content">
             <h3>Modifier les informations</h3>
-            
             <input type="text" id="inputName" placeholder="Prénom Nom">
             <input type="text" id="inputBirthdate" placeholder="DD. MM. YYYY">
-            
             <button class="btn btn-photo" onclick="document.getElementById('fileInput').click()">📸 Modifier la photo</button>
             <button class="btn btn-save" onclick="saveModal()">Enregistrer</button>
             <button class="btn btn-cancel" onclick="closeModal()">Fermer</button>
@@ -290,7 +283,6 @@
     </div>
 
     <script>
-        // Horloge temps réel (Format DD-MM-YYYY | HH:MM:SS)
         function updateClock() {
             const now = new Date();
             const d = String(now.getDate()).padStart(2, '0');
@@ -304,7 +296,6 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Génération automatique du numéro ISIC s'il n'existe pas
         function initISIC() {
             let isic = localStorage.getItem('isic_number');
             if (!isic) {
@@ -315,38 +306,27 @@
             document.getElementById('isic').textContent = isic;
         }
 
-        // Calcul automatique de la validité (Année scolaire en cours)
         function calculateValidity() {
             const now = new Date();
-            const currentMonth = now.getMonth(); // 0 = Janvier, 7 = Août, 8 = Septembre
+            const currentMonth = now.getMonth(); 
             const currentYear = now.getFullYear();
-            
-            // L'année commence en septembre.
             const startYear = currentMonth >= 7 ? currentYear : currentYear - 1;
             const endYear = startYear + 1;
-            
             return `09/${startYear} - 12/${endYear}`;
         }
 
-        // Chargement des données au démarrage
         function loadData() {
             initISIC();
             document.getElementById('validity').textContent = calculateValidity();
-
             const savedName = localStorage.getItem('isic_name');
             if (savedName) document.getElementById('name').textContent = savedName;
-
             const savedBirth = localStorage.getItem('isic_birthdate');
             if (savedBirth) document.getElementById('birthdate').textContent = savedBirth;
-
             const savedPhoto = localStorage.getItem('isic_photo');
-            if (savedPhoto) {
-                document.getElementById('photo').src = savedPhoto;
-            }
+            if (savedPhoto) document.getElementById('photo').src = savedPhoto;
         }
         loadData();
 
-        // Gestion de la modale
         const modal = document.getElementById('editModal');
         
         function openModal() {
@@ -360,11 +340,9 @@
             document.getElementById('fileInput').value = ''; 
         }
 
-        // Sauvegarde instantanée sans bloquer l'interface
         function saveModal() {
             const newName = document.getElementById('inputName').value.trim();
             const newBirth = document.getElementById('inputBirthdate').value.trim();
-            
             if (newName) {
                 document.getElementById('name').textContent = newName;
                 localStorage.setItem('isic_name', newName);
@@ -373,15 +351,12 @@
                 document.getElementById('birthdate').textContent = newBirth;
                 localStorage.setItem('isic_birthdate', newBirth);
             }
-            
             closeModal();
         }
 
-        // Traitement et compression de l'image pour respecter les limites du navigateur
         function handleImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = function(e) {
                 const img = new Image();
@@ -390,27 +365,19 @@
                     const MAX_WIDTH = 500; 
                     let width = img.width;
                     let height = img.height;
-
                     if (width > MAX_WIDTH) {
                         height *= MAX_WIDTH / width;
                         width = MAX_WIDTH;
                     }
-
                     canvas.width = width;
                     canvas.height = height;
-
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, width, height);
-                    
-                    // Compression en jpeg pour la légèreté
                     const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7); 
                     document.getElementById('photo').src = compressedBase64;
-                    
                     try {
                         localStorage.setItem('isic_photo', compressedBase64);
-                    } catch (err) {
-                        console.error("Quota localStorage dépassé", err);
-                    }
+                    } catch (err) {}
                 };
                 img.src = e.target.result;
             };
